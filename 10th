@@ -1,0 +1,82 @@
+Right-click project → Add → New Folder → name it Models.
+Inside Models/Student.cs:
+namespace RazorPagesApp.Models
+{
+    public class Student
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Course { get; set; }
+        public int Age { get; set; }
+    }
+}
+Step 4: Add a Razor Page
+Right-click Pages → Add → Razor Page → choose Empty.
+Name it Create.cshtml.
+This creates Create.cshtml and Create.cshtml.cs.
+Step 5: Create Form Using Helper Tags
+In Create.cshtml:
+@page
+@model RazorPagesApp.Pages.CreateModel
+@{
+    ViewData["Title"] = "Create Student";
+}
+
+<h2>Create Student</h2>
+
+<form method="post">
+    <div>
+        @Html.LabelFor(m => m.Student.Name)
+        @Html.TextBoxFor(m => m.Student.Name, new { @class = "form-control" })
+    </div>
+
+    <div>
+        @Html.LabelFor(m => m.Student.Course)
+        @Html.TextBoxFor(m => m.Student.Course, new { @class = "form-control" })
+    </div>
+
+    <div>
+        @Html.LabelFor(m => m.Student.Age)
+        @Html.TextBoxFor(m => m.Student.Age, new { @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+Note: Html.LabelFor and Html.TextBoxFor are HTML Helper Tags.
+Step 6: Handle Form Submission
+In Create.cshtml.cs:
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using RazorPagesApp.Models;
+
+namespace RazorPagesApp.Pages
+{
+    public class CreateModel : PageModel
+    {
+        [BindProperty]
+        public Student Student { get; set; }
+
+        public void OnGet()
+        {
+        }
+
+        public IActionResult OnPost()
+        {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            TempData["Message"] = $"Student {Student.Name} saved successfully!";
+            return RedirectToPage("/Index");
+        }
+    }
+}
+Step 7: Show Success Message
+In Index.cshtml (already present):
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
