@@ -1,0 +1,81 @@
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+
+namespace ShoppingCartApp
+{
+    public partial class Form1 : Form
+    {
+        Dictionary<string, decimal> products = new Dictionary<string, decimal>();
+
+        public Form1()
+        {
+            InitializeComponent();
+            LoadProducts();
+        }
+
+        private void LoadProducts()
+        {
+            // Add some sample products
+            products.Add("Apple", 30.00m);
+            products.Add("Banana", 10.00m);
+            products.Add("Milk", 45.50m);
+            products.Add("Bread", 25.00m);
+            products.Add("Curd", 50.00m);
+            products.Add("Orange", 20.00m);
+
+            foreach (var item in products)
+            {
+                lstProducts.Items.Add($"{item.Key} - ₹{item.Value}");
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+        }
+
+        private void btnAddToCart_Click(object sender, EventArgs e)
+        {
+            if (lstProducts.SelectedItem != null)
+            {
+                lstCart.Items.Add(lstProducts.SelectedItem);
+                UpdateTotal();
+            }
+            else
+            {
+                MessageBox.Show("Please select a product to add to cart.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btnRemoveFromCart_Click(object sender, EventArgs e)
+        {
+            if (lstCart.SelectedItem != null)
+            {
+                lstCart.Items.Remove(lstCart.SelectedItem);
+                UpdateTotal();
+            }
+            else
+            {
+                MessageBox.Show("Please select an item from the cart to remove.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void UpdateTotal()
+        {
+            decimal total = 0;
+
+            foreach (var item in lstCart.Items)
+            {
+                string itemText = item.ToString();
+                string[] parts = itemText.Split('₹');
+
+                if (parts.Length > 1 && decimal.TryParse(parts[1], out decimal price))
+                {
+                    total += price;
+                }
+            }
+
+            lblTotal.Text = $"Total: ₹{total:0.00}";
+        }
+    }
+}
