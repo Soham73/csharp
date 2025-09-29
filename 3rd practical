@@ -1,0 +1,105 @@
+Step 1: Create a SQL Server Database
+You can use SQL Server Management Studio (SSMS) or Visual Studio’s Server Explorer.
+CREATE DATABASE StudentDB;
+GO
+
+USE StudentDB;
+GO
+
+CREATE TABLE Students (
+    ID INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(100),
+    Age INT,
+    Email NVARCHAR(100)
+);
+Step 2: Create a Windows Forms App in Visual Studio 2019
+Open Visual Studio 2019.
+Click on Create a new project.
+Choose Windows Forms App (.NET Framework).
+Name it StudentCRUDApp and click Create.
+Step 3: Add SQL Connection
+Add System.Data.SqlClient for SQL Server connectivity.
+using System.Data;
+using System.Data.SqlClient;
+Create a connection string in your form:
+string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=StudentDB;Integrated Security=True;";
+Step 4: Design the Form UI
+Drag and drop the following controls onto Form1:
+Labels & Textboxes: For Name, Age, and Email
+Buttons: Add, Update, Delete, and Load
+DataGridView: To display student records
+Rename the controls appropriately (e.g., txtName, btnAdd, dataGridView1).
+
+Step 5: Implement CRUD Operations
+🔹 CREATE (Insert Data)
+private void btnAdd_Click(object sender, EventArgs e)
+{
+    using (SqlConnection conn = new SqlConnection(connectionString))
+    {
+        conn.Open();
+        string query = "INSERT INTO Students (Name, Age, Email) VALUES (@Name, @Age, @Email)";
+        SqlCommand cmd = new SqlCommand(query, conn);
+        cmd.Parameters.AddWithValue("@Name", txtName.Text);
+        cmd.Parameters.AddWithValue("@Age", int.Parse(txtAge.Text));
+        cmd.Parameters.AddWithValue("@Email", txtEmail.Text);
+        cmd.ExecuteNonQuery();
+        MessageBox.Show("Record Added Successfully");
+        LoadData();
+    }
+}
+READ (Load Data into DataGridView)
+private void LoadData()
+{
+    using (SqlConnection conn = new SqlConnection(connectionString))
+    {
+        conn.Open();
+        SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM Students", conn);
+        DataTable dt = new DataTable();
+        da.Fill(dt);
+        dataGridView1.DataSource = dt;
+    }
+}
+Call LoadData(); in Form1_Load.
+UPDATE
+private void btnUpdate_Click(object sender, EventArgs e)
+{
+    using (SqlConnection conn = new SqlConnection(connectionString))
+    {
+        conn.Open();
+        string query = "UPDATE Students SET Name=@Name, Age=@Age, Email=@Email WHERE ID=@ID";
+        SqlCommand cmd = new SqlCommand(query, conn);
+        cmd.Parameters.AddWithValue("@ID", int.Parse(txtID.Text));
+        cmd.Parameters.AddWithValue("@Name", txtName.Text);
+        cmd.Parameters.AddWithValue("@Age", int.Parse(txtAge.Text));
+        cmd.Parameters.AddWithValue("@Email", txtEmail.Text);
+        cmd.ExecuteNonQuery();
+        MessageBox.Show("Record Updated Successfully");
+        LoadData();
+    }
+}
+DELETE
+private void btnDelete_Click(object sender, EventArgs e)
+{
+    using (SqlConnection conn = new SqlConnection(connectionString))
+    {
+        conn.Open();
+        string query = "DELETE FROM Students WHERE ID=@ID";
+        SqlCommand cmd = new SqlCommand(query, conn);
+        cmd.Parameters.AddWithValue("@ID", int.Parse(txtID.Text));
+        cmd.ExecuteNonQuery();
+        MessageBox.Show("Record Deleted Successfully");
+        LoadData();
+    }
+}
+On DataGridView Row Click (to populate fields)
+private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+{
+    if (e.RowIndex >= 0)
+    {
+        DataGridViewRow row = dataGridView1.Rows[e.RowIndex];
+        txtID.Text = row.Cells["ID"].Value.ToString();
+        txtName.Text = row.Cells["Name"].Value.ToString();
+        txtAge.Text = row.Cells["Age"].Value.ToString();
+        txtEmail.Text = row.Cells["Email"].Value.ToString();
+    }
+}
