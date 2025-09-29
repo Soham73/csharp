@@ -1,0 +1,34 @@
+namespace pract6_DI
+{
+public interface INotificationAction
+{
+void ActOnNotification(string message);
+}
+class simple
+{
+INotificationAction task = null;
+public void notify(INotificationAction at, string messages)
+{
+this.task = at;
+task.ActOnNotification(messages);
+}
+}
+class EventLogWriter : INotificationAction
+{
+public void ActOnNotification(string message)
+{
+Console.WriteLine("Click on the bell icon to get notifications.");
+}
+}
+class Program
+{
+static void Main(String[] args)
+{
+EventLogWriter elw = new EventLogWriter();
+simple at = new simple();
+at.notify(elw, "to logg");
+Console.ReadKey();
+}
+}
+
+}
