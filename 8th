@@ -1,0 +1,45 @@
+3. Create a model class Product.cs:
+
+public class Product {
+    public int ProductId { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+    public int Quantity { get; set; }
+}
+
+
+4. Create a ProductsController.cs under Controllers:
+
+public class ProductsController : ApiController {
+    static List<Product> products = new List<Product>() {
+        new Product { ProductId=1, Name="Laptop", Price=50000, Quantity=5 },
+        new Product { ProductId=2, Name="Mouse", Price=500, Quantity=10 }
+    };
+
+    public IEnumerable<Product> Get() {
+        return products;
+    }
+
+    public Product Get(int id) {
+        return products.FirstOrDefault(p => p.ProductId == id);
+    }
+
+    public void Post(Product product) {
+        products.Add(product);
+    }
+
+    public void Put(int id, Product product) {
+        var existing = products.FirstOrDefault(p => p.ProductId == id);
+        if(existing != null) {
+            existing.Name = product.Name;
+            existing.Price = product.Price;
+            existing.Quantity = product.Quantity;
+        }
+    }
+
+    public void Delete(int id) {
+        var product = products.FirstOrDefault(p => p.ProductId == id);
+        if(product != null) products.Remove(product);
+    }
+}
+
